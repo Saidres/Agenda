@@ -26,5 +26,27 @@ class contactoView(APIView):
             return Response(serializador.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializador.data, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        try:
+            contacto_existente = contacto.objects.get(pk=pk)
+        except contacto.DoesNotExist:
+            return Response({"error": "El contacto no existe"}, status=status.HTTP_404_NOT_FOUND)
         
+        data = {
+            'nombre': request.data.get('nombre', contacto_existente.nombre),
+            'telefono': request.data.get('telefono', contacto_existente.telefono),
+            'email': request.data.get('email', contacto_existente.email),
+        }
+        
+        serializador = contacto_serializer(contacto_existente, data=data, partial=True)
+        
+        if serializador.is_valid():
+            serializador.save()
+            return Response(serializador.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializador.errors, status=status.HTTP_400_BAD_REQUEST)
+   
+
     
