@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import contacto
 
-# Register your models here.
+@admin.register(contacto)
+class contactoAdmin(admin.ModelAdmin):
+    list_display = ['nombre', 'telefono', 'email']
